@@ -10,8 +10,8 @@ module YandexKassa
       post_signed_xml_request(make_deposition_request)
     end
 
-    def balance(parmas = {}, &block)
-      balance_request = Balance.new(parmas, &block)
+    def balance(params = {}, &block)
+      balance_request = Balance.new(params, &block)
       post_signed_xml_request(balance_request)
     end
 
