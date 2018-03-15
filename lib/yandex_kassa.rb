@@ -10,29 +10,21 @@ require "rest-client"
 
 module YandexKassa
   extend self
-  def create
-    Api.new(url: configuration.url,
-            cert_file: configuration.cert_file,
-            key_file: configuration.key_file,
-            response_parser: pkcs7_response_parser,
-            request_signer: request_signer)
+  def create(url, cert_file, key_file, deposit_cert_file)
+    Api.new(url: url,
+            cert_file: cert_file,
+            key_file: key_file,
+            response_parser: pkcs7_response_parser(cert_file, deposit_cert_file),
+            request_signer: request_signer(cert_file, key_file))
   end
 
-  def configure(&block)
-    block.call(configuration)
-  end
-
-  def configuration
-    @configuration ||= Configuration.new
-  end
-
-  def pkcs7_response_parser
+  def pkcs7_response_parser(cert_file, deposit_cert_file)
     @pkcs7_response_parser ||= SignedResponseParser.new(
-      deposit_cert_file: configuration.deposit_cert_file,
-      cert_file: configuration.cert_file)
+      deposit_cert_file: deposit_cert_file,
+      cert_file: cert_file)
   end
 
-  def request_signer
-    @request_signer ||= RequestSigner.new(cert_file: configuration.cert_file, key_file: configuration.key_file)
+  def request_signer(cert_file, key_file)
+    @request_signer ||= RequestSigner.new(cert_file: cert_file, key_file: key_file)
   end
 end
